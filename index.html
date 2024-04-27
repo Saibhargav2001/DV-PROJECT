@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bar Graph using D3.js</title>
+  <style>
+    /* Add some basic styling to our chart */
+    body {
+      font-family: Arial, sans-serif;
+    }
+  .bar {
+      fill: steelblue;
+    }
+  .axis--x path {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Add a div to hold our chart -->
+  <div id="chart"></div>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    // Set up the SVG
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        width = 500 - margin.left - margin.right,
+        height = 300 - margin.top - margin.bottom;
+
+    var svg = d3.select("#chart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Load the CSV data using a CORS proxy
+    fetch('proxy.html')
+    .then(response => response.text())
+    .then(data => {
+        // Process the data
+        const csvData = d3.csvParse(data);
+        var junctions = csvData.map(function(d) { return d.Junction; });
+        var vehicles = csvData.map(function(d) { return +d.Vehicles; });
+
+        // Set up the scales
+        var xScale = d3.scaleBand()
+        .domain(junctions)
+        .range([0, width])
+        .padding(0.2);
+
+        var yScale = d3.scaleLinear()
+        .domain([0, d3.max(vehicles)])
+        .range([height, 0]);
+
+        // Draw the bars
+        svg.selectAll("rect")
+        .data(csvData)
+        .enter()
+        .append("rect")
+        .attr("x", function(d) { return xScale(d.Junction); })
+        .attr("y", function(d) { return yScale(d.Vehicles); })
+        .attr("width", xScale.bandwidth())
+        .attr("height", function(d) { return height - yScale(d.Vehicles); });
+
+        // Add axis labels
+        svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xScale));
+
+        svg.append("g")
+        .call(d3.axisLeft(yScale));
+      });
+  </script>
+</body>
+</html>

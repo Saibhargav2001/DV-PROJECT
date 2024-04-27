@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CORS Proxy</title>
+</head>
+<body>
+  <script>
+    const proxyUrl = 'https://corsproxy.io/';
+    const apiUrl = '/Users/nikhikkumarreddy/Desktop/d3/data.csv';
+    fetch(proxyUrl + apiUrl)
+    .then(response => response.text())
+    .then(data => console.log(data));
+  </script>
+</body>
+</html>
